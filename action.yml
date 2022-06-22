@@ -8,9 +8,24 @@ inputs:
   domain:
     description: 'Domain name (e.g. https://your-domain.atlassian.net)'
     required: true
-  auth-token:
-    description: 'Jira Auth token key'
+  username:
+    description: 'Jira Username'
     required: true
+  password:
+    description: 'Jira Personal Access Token'
+    required: true
+  versionName:
+    description: 'The name of the Version to use'
+    required: true
+  issueKey:
+    description: 'The key of the issue that is to be updated'
+    required: true
+  versionDescription:
+    description: 'The description of the Version (default: "CD version"'
+    required: false
+  versionArchived:
+    description: 'Mark the new version as archived (default: true)'
+    required: false
 runs:
   using: 'node16'
   main: 'index.js'
