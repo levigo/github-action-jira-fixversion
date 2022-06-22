@@ -1,0 +1,16 @@
+name: 'Jira create and set fix version'
+description: 'Intended for CD, this action creates and sets the given version as fix version in Jira Cloud for given issue'
+branding:
+  icon: "cloud"
+  color: "blue"
+
+inputs:
+  domain:
+    description: 'Domain name (e.g. https://your-domain.atlassian.net)'
+    required: true
+  auth-token:
+    description: 'Jira Auth token key'
+    required: true
+runs:
+  using: 'node16'
+  main: 'index.js'
