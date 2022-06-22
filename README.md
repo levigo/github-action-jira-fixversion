@@ -3,6 +3,8 @@
 This action is intended for Continuous Delivery with Jira Cloud.
 The action will set the "fix version" in Jira to the given version (and creates the version if needed).
 
+![Screenshot of a Jira Cloud issue with fix version](jira-cloud-screenshot.png)
+
 ## Example usage
 ```yaml
 uses: levigo/github-action-jira-fixversion@v1.0
