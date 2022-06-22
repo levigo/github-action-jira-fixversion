@@ -17,8 +17,8 @@ inputs:
   versionName:
     description: 'The name of the Version to use'
     required: true
-  issueKey:
-    description: 'The key of the issue that is to be updated'
+  issueKeys:
+    description: 'The key(s) of the issue(s) that is to be updated. If multiple are used, separate them with a comma (e.g. "TEST-1,TEST-2")'
     required: true
   versionDescription:
     description: 'The description of the Version (default: "CD version"'

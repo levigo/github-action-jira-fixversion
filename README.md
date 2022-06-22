@@ -12,7 +12,7 @@ with:
   password: "fmpUJkGhdKFvoTJclsZ03xw1"
   versionName: "1.0.5"
   versionDescription: "Continuous Delivery Version"
-  issueKey: "TEST-1"
+  issueKeys: "TEST-1"
 ```
 
 ### Usage with "Action Regex Match"
@@ -32,5 +32,5 @@ Here is an example on how to extract the `issueKey` from the commit message
           password: "fmpUJkGhdKFvoTJclsZ03xw1"
           versionName: "1.0.5"
           versionDescription: "Continuous Delivery Version"
-          issueKey: ${{ steps.regex-match.outputs.match }}
+          issueKeys: ${{ steps.regex-match.outputs.match }}
 ```

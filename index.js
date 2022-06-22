@@ -1,14 +1,14 @@
 const core = require("@actions/core");
 const JiraApi = require("jira-client")
 
-let jira, domain, username, password, versionName, versionDescription, versionArchived, issueKey;
+let jira, domain, username, password, versionName, versionDescription, versionArchived, issueKeys;
 (async () => {
     try {
         domain = core.getInput("domain");
         username = core.getInput("username");
         password = core.getInput("password");
         versionName = core.getInput("versionName");
-        issueKey = core.getInput("issueKey");
+        issueKeys = core.getInput("issueKeys");
         versionDescription = core.getInput("versionDescription") || "CD Version";
         versionArchived = core.getInput("versionArchived") || true;
 
@@ -20,7 +20,7 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
             password: password,
         });
         //core.setFailed(`version is not correct: [${version}] must be "1.0.0"/"v1.0.0"/"test 1.0.0" pattern`);
-        createAndSetVersion(issueKey, versionName, versionDescription, versionArchived)
+        createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived)
 
         // core.setOutput("new-version", nextVersion);
     } catch (error) {
@@ -28,13 +28,17 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
     }
 })();
 
-async function createAndSetVersion(issueKey, versionName, versionDescription, versionArchived) {
+async function createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived) {
     // from e.g. TEST-1 get the project key --> TEST
-    const projectKey = getProjectKey(issueKey);
+    const projectKey = getProjectKey(issueKeys);
     const projectId = await getProjectId(projectKey);
-    const issueId = await getIssueId(issueKey);
     const versionId = await createVersion(projectId, versionName, versionDescription, versionArchived);
-    await setVersion(issueId, versionId);
+    const issueKeyArr = issueKeys.split(",");
+    for (let i = 0; i < issueKeyArr.length; i++) {
+        const issueKey = issueKeyArr[i];
+        const issueId = await getIssueId(issueKey);
+        await setVersion(issueId, versionId);
+    }
 }
 
 function getProjectKey(issueKey) {
