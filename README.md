@@ -19,13 +19,15 @@ with:
 
 ### Usage with "Action Regex Match"
 
-Here is an example on how to extract the `issueKey` from the commit message
+Here is an example on how to extract the `issueKey` from the commit message.
+The regex is based on [Atlassian Documentation](https://confluence.atlassian.com/stashkb/integrating-with-custom-jira-issue-key-313460921.html).
+
 ```yaml
       - uses: actions-ecosystem/action-regex-match@v2
         id: regex-match
         with:
           text: ${{ github.event.head_commit.message }}
-          regex: "[A-Z]{1,}[-]{1,}[0-9]{1,}"
+          regex: "((?<!([A-Z]{1,10})-?)[A-Z]+-\d+)"
 
       - uses: levigo/github-action-jira-fixversion@v1.0
         with:
