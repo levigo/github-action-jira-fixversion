@@ -36,20 +36,24 @@ Here is an example on how to extract the `issueKeys` from the commit messages an
 for all those Jira issues.
 
 ```yaml
-      - uses: levigo/github-action-glix@v1.0
-        id: glix
-        with:
-          commitId: ${{ github.sha }}
-          mainBranch: "master"
+  - uses: actions/checkout@v3
+    with:
+      fetch-depth: '30'
 
-      - uses: levigo/github-action-jira-fixversion@v1.0
-        with:
-          domain: "my-company.atlassian.net"
-          username: "technical-user@company.net"
-          password: "fmpUJkGhdKFvoTJclsZ03xw1"
-          versionName: "1.0.5"
-          versionDescription: "Continuous Delivery Version"
-          issueKeys: ${{ steps.glix.outputs.issueKeys }}
+  - uses: levigo/github-action-glix@v1.0
+    id: glix
+    with:
+      commitId: ${{ github.sha }}
+      mainBranch: "master"
+
+  - uses: levigo/github-action-jira-fixversion@v1.0
+    with:
+      domain: "my-company.atlassian.net"
+      username: "technical-user@company.net"
+      password: "fmpUJkGhdKFvoTJclsZ03xw1"
+      versionName: "1.0.5"
+      versionDescription: "Continuous Delivery Version"
+      issueKeys: ${{ steps.glix.outputs.issueKeys }}
 ```
 
 
