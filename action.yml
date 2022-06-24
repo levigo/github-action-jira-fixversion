@@ -6,7 +6,7 @@ branding:
 
 inputs:
   domain:
-    description: 'Domain name (e.g. https://your-domain.atlassian.net)'
+    description: 'Domain name of the Jira cloud instance (e.g. your-domain.atlassian.net)'
     required: true
   username:
     description: 'Jira Username'
@@ -21,7 +21,7 @@ inputs:
     description: 'The key(s) of the issue(s) that is to be updated. If multiple are used, separate them with a comma (e.g. "TEST-1,TEST-2")'
     required: true
   versionDescription:
-    description: 'The description of the Version (default: "CD version"'
+    description: 'The description of the Version (default: "CD version")'
     required: false
   versionArchived:
     description: 'Mark the new version as archived (default: true)'

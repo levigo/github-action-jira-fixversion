@@ -6,9 +6,13 @@ The action will set the "fix version" in Jira to the given version (and creates 
 ![Screenshot of a Jira Cloud issue with fix version](jira-cloud-screenshot.png)
 
 ## Inputs
-- `commitId`: the ID (sha) of the relevant commit
-- `mainBranch`: the main branch of the repo (e.g. "master" or "main")
-- `baseDir`: (optional) the path of the git repo to use
+- `domain`: Domain name of the Jira cloud instance (e.g. your-domain.atlassian.net)
+- `username`: Jira Username
+- `password`: Jira Personal Access Token. Get it from [here](https://id.atlassian.com/manage-profile/security/api-tokens)
+- `versionName`: The name of the Version to use (e.g. "1.0.5")
+- `issueKeys`: The key(s) of the issue(s) that is to be updated. If multiple are used, separate them with a comma (e.g. "TEST-1,TEST-2")
+- `versionDescription`: The description of the Version (default: "CD version")
+- `versionArchived`: Mark the new version as archived (default: true)
 
 ## Outputs
 None
