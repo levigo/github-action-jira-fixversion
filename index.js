@@ -10,7 +10,7 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
         versionName = core.getInput("versionName");
         issueKeys = core.getInput("issueKeys");
         versionDescription = core.getInput("versionDescription") || "CD Version";
-        versionArchived = core.getInput("versionArchived") || true;
+        versionArchived = core.getInput("versionArchived") === "true" || core.getInput("versionArchived") === true;
 
         // Initialize
         jira = new JiraApi({
