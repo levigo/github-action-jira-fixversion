@@ -32,12 +32,20 @@ async function createAndSetVersion(issueKeys, versionName, versionDescription, v
     // from e.g. TEST-1 get the project key --> TEST
     const projectKey = getProjectKey(issueKeys);
     const projectId = await getProjectId(projectKey);
-    const versionId = await createVersion(projectId, versionName, versionDescription, versionArchived);
+    const versionId = await createVersion(projectId, versionName, versionDescription);
     const issueKeyArr = issueKeys.split(",");
     for (let i = 0; i < issueKeyArr.length; i++) {
         const issueKey = issueKeyArr[i];
         const issueId = await getIssueId(issueKey);
         await setVersion(issueId, versionId);
+    }
+    // archive version (passing it as argument while creating version doesn't work
+    if (versionArchived) {
+        await jira.updateVersion({
+            id: versionId,
+            archived: true,
+            projectId: projectId
+        });
     }
 }
 
@@ -55,12 +63,11 @@ async function getIssueId(issueKey) {
     return issue.id;
 }
 
-async function createVersion(projectId, versionName, versionDescription, versionArchived) {
+async function createVersion(projectId, versionName, versionDescription) {
     const date = new Date().toISOString().substring(0,10);
     let version =  await jira.createVersion({
         description: versionDescription,
         name: versionName,
-        archived: versionArchived,
         released: false,
         startDate: date,
         projectId: projectId
