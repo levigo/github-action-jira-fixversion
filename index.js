@@ -1,7 +1,7 @@
 const core = require("@actions/core");
 const JiraApi = require("jira-client")
 
-let jira, domain, username, password, versionName, versionDescription, versionArchived, issueKeys;
+let jira, domain, username, password, versionName, versionDescription, versionArchived, issueKeys, versionReleased;
 (async () => {
     try {
         domain = core.getInput("domain");
@@ -11,6 +11,7 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
         issueKeys = core.getInput("issueKeys");
         versionDescription = core.getInput("versionDescription") || "CD Version";
         versionArchived = core.getInput("versionArchived") === "true" || core.getInput("versionArchived") === true;
+        versionReleased = core.getInput("versionReleased") === "true" || core.getInput("versionReleased") === true;
 
         // Initialize
         jira = new JiraApi({
@@ -20,7 +21,7 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
             password: password,
         });
         //core.setFailed(`version is not correct: [${version}] must be "1.0.0"/"v1.0.0"/"test 1.0.0" pattern`);
-        createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived)
+        createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived, versionReleased)
 
         // core.setOutput("new-version", nextVersion);
     } catch (error) {
@@ -28,7 +29,7 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
     }
 })();
 
-async function createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived) {
+async function createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived, versionReleased) {
     // from e.g. TEST-1 get the project key --> TEST
     const projectKey = getProjectKey(issueKeys);
     const projectId = await getProjectId(projectKey);
@@ -44,6 +45,14 @@ async function createAndSetVersion(issueKeys, versionName, versionDescription, v
         await jira.updateVersion({
             id: versionId,
             archived: true,
+            projectId: projectId
+        });
+    }
+    // publish version (passing it as argument while creating version doesn't work
+    if (versionReleased) {
+        await jira.updateVersion({
+            id: versionId,
+            released: true,
             projectId: projectId
         });
     }
