@@ -30,5 +30,5 @@ inputs:
     description: 'Mark the new version as released (default: false)'
     required: false
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'index.js'
