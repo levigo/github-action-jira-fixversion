@@ -50,10 +50,12 @@ async function createAndSetVersion(issueKeys, versionName, versionDescription, v
     }
     // publish version (passing it as argument while creating version doesn't work
     if (versionReleased) {
+        const date = new Date().toISOString().substring(0,10);
         await jira.updateVersion({
             id: versionId,
             released: true,
-            projectId: projectId
+            projectId: projectId, 
+            releaseDate: date
         });
     }
 }
