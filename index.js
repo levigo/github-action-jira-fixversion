@@ -32,8 +32,8 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
 async function createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived, versionReleased) {
     // from e.g. TEST-1 get the project key --> TEST
     const projectKey = getProjectKey(issueKeys);
-    const projectId = await getProjectId(projectKey);
-    const versionId = await createVersion(projectId, versionName, versionDescription);
+    const versionId = await createOrRetrieveVersion(projectKey, versionName, versionDescription);
+
     const issueKeyArr = issueKeys.split(",");
     for (let i = 0; i < issueKeyArr.length; i++) {
         const issueKey = issueKeyArr[i];
@@ -45,7 +45,6 @@ async function createAndSetVersion(issueKeys, versionName, versionDescription, v
         await jira.updateVersion({
             id: versionId,
             archived: true,
-            projectId: projectId
         });
     }
     // publish version (passing it as argument while creating version doesn't work
@@ -54,7 +53,6 @@ async function createAndSetVersion(issueKeys, versionName, versionDescription, v
         await jira.updateVersion({
             id: versionId,
             released: true,
-            projectId: projectId, 
             releaseDate: date
         });
     }
@@ -74,8 +72,14 @@ async function getIssueId(issueKey) {
     return issue.id;
 }
 
-async function createVersion(projectId, versionName, versionDescription) {
+async function createOrRetrieveVersion(projectKey, versionName, versionDescription) {
+    const existingVersion = await getVersion(projectKey, versionName);
+    if (existingVersion) {
+        return existingVersion.id;
+    }
+
     const date = new Date().toISOString().substring(0,10);
+    const projectId = await getProjectId(projectKey);
     let version =  await jira.createVersion({
         description: versionDescription,
         name: versionName,
@@ -83,21 +87,23 @@ async function createVersion(projectId, versionName, versionDescription) {
         startDate: date,
         projectId: projectId
     });
-    if (!!version.errors) {
-        // version exists already
-        version = await getVersion(projectId, versionName);
-    }
     return version.id;
 }
 
-async function getVersion(projectId, versionName) {
-    const versions = await jira.getVersions(projectId);
-    for (let i = 0; i < versions.length; i++) {
-        const version = versions[i];
+async function getVersion(projectKey, versionName) {
+    const versions = await jira.doRequest(jira.makeRequestHeader(jira.makeUri({
+        pathname: `/project/${projectKey}/version`,
+        query: {
+            query: versionName,
+        },
+    })));
+    for (let i = 0; i < versions.values.length; i++) {
+        const version = versions.values[i];
         if (version.name === versionName) {
             return version;
         }
     }
+
     return undefined;
 }
 
