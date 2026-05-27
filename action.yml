@@ -29,6 +29,9 @@ inputs:
   versionReleased:
     description: 'Mark the new version as released (default: false)'
     required: false
+  projectKey:
+    description: 'The project the new version should be created in (default: project key of the first issue key)'
+    required: false
 runs:
   using: 'node24'
   main: 'dist/index.js'

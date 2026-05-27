@@ -1,7 +1,7 @@
 const core = require("@actions/core");
 const JiraApi = require("jira-client")
 
-let jira, domain, username, password, versionName, versionDescription, versionArchived, issueKeys, versionReleased;
+let jira, domain, username, password, versionName, versionDescription, versionArchived, issueKeys, versionReleased, projectKey;
 (async () => {
     try {
         domain = core.getInput("domain");
@@ -12,6 +12,7 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
         versionDescription = core.getInput("versionDescription") || "CD Version";
         versionArchived = core.getInput("versionArchived") === "true" || core.getInput("versionArchived") === true;
         versionReleased = core.getInput("versionReleased") === "true" || core.getInput("versionReleased") === true;
+        projectKey = core.getInput("projectKey") || getProjectKey(issueKeys);
 
         // Initialize
         jira = new JiraApi({
@@ -21,7 +22,7 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
             password: password,
         });
         //core.setFailed(`version is not correct: [${version}] must be "1.0.0"/"v1.0.0"/"test 1.0.0" pattern`);
-        createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived, versionReleased)
+        await createAndSetVersion(projectKey, issueKeys, versionName, versionDescription, versionArchived, versionReleased)
 
         // core.setOutput("new-version", nextVersion);
     } catch (error) {
@@ -29,16 +30,16 @@ let jira, domain, username, password, versionName, versionDescription, versionAr
     }
 })();
 
-async function createAndSetVersion(issueKeys, versionName, versionDescription, versionArchived, versionReleased) {
-    // from e.g. TEST-1 get the project key --> TEST
-    const projectKey = getProjectKey(issueKeys);
+async function createAndSetVersion(projectKey, issueKeys, versionName, versionDescription, versionArchived, versionReleased) {
     const projectId = await getProjectId(projectKey);
     const versionId = await createVersion(projectId, versionName, versionDescription);
     const issueKeyArr = issueKeys.split(",");
     for (let i = 0; i < issueKeyArr.length; i++) {
         const issueKey = issueKeyArr[i];
-        const issueId = await getIssueId(issueKey);
-        await setVersion(issueId, versionId);
+        if (issueKey) {
+            const issueId = await getIssueId(issueKey);
+            await setVersion(issueId, versionId);
+        }
     }
     // archive version (passing it as argument while creating version doesn't work
     if (versionArchived) {
@@ -54,7 +55,7 @@ async function createAndSetVersion(issueKeys, versionName, versionDescription, v
         await jira.updateVersion({
             id: versionId,
             released: true,
-            projectId: projectId, 
+            projectId: projectId,
             releaseDate: date
         });
     }
@@ -65,6 +66,7 @@ function getProjectKey(issueKey) {
 }
 
 async function getProjectId(projectKey) {
+    // from e.g. TEST-1 get the project key --> TEST
     const project = await jira.getProject(projectKey);
     return project.id
 }

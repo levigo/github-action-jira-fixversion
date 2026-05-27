@@ -14,6 +14,7 @@ The action will set the "fix version" in Jira to the given version (and creates 
 - `versionDescription`: The description of the Version (default: "CD version")
 - `versionArchived`: Mark the new version as archived (default: `false`)
 - `versionReleased`: Mark the new version as released (default: `false`)
+- `projectKey`: The project the new version should be created in (default: project key of the first issue key)
 
 ## Outputs
 None
